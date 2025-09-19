@@ -71,18 +71,25 @@ impl<T> LinkedList<T> {
             },
         }
     }
-	pub fn reverse(&mut self) where
-        T: Copy
-    {
+	pub fn reverse(&mut self) {
 		// TODO
-        let mut new_list = Self::new();
-        let mut current_node = self.end;
-        while let Some(nn) = current_node {
-            new_list.add(unsafe {(*nn.as_ptr()).val});
-            current_node = unsafe {(*nn.as_ptr()).prev};
+        let mut current_node = self.start;
+        while let Some(mut current) = current_node {
+            unsafe {
+                let prev_node = (*current.as_ptr()).prev;
+                let next_node = (*current.as_ptr()).next;
+
+                (*current.as_ptr()).prev = next_node;
+                (*current.as_ptr()).next = prev_node;
+
+                current_node = next_node;
+            }
         }
-        *self = new_list;
+        let old_start = self.start;
+        self.start = self.end;
+        self.end = old_start;
 	}
+
 }
 
 impl<T> Display for LinkedList<T>
